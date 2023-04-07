@@ -23,6 +23,9 @@ contract MigrationHelper is Ownable, IMigrationHelper {
   /// @inheritdoc IMigrationHelper
   IV3Pool public immutable V3_POOL;
 
+  /// @inheritdoc IMigrationHelper
+  IV3Pool public immutable FLASHLOAN_POOL;
+
   mapping(address => IERC20WithPermit) public aTokens;
   mapping(address => IERC20WithPermit) public vTokens;
   mapping(address => IERC20WithPermit) public sTokens;
@@ -31,10 +34,12 @@ contract MigrationHelper is Ownable, IMigrationHelper {
    * @notice Constructor.
    * @param v3Pool The v3 pool
    * @param v2Pool The v2 pool
+   * @param flashLoanPool The flash loan pool
    */
-  constructor(IV3Pool v3Pool, IV2Pool v2Pool) {
+  constructor(IV3Pool v3Pool, IV2Pool v2Pool, IV3Pool flashLoanPool) {
     V3_POOL = v3Pool;
     V2_POOL = v2Pool;
+    FLASHLOAN_POOL = flashLoanPool;
     cacheATokens();
   }
 
@@ -51,6 +56,7 @@ contract MigrationHelper is Ownable, IMigrationHelper {
 
         IERC20WithPermit(reserves[i]).safeApprove(address(V2_POOL), type(uint256).max);
         IERC20WithPermit(reserves[i]).safeApprove(address(V3_POOL), type(uint256).max);
+        if (V3_POOL != FLASHLOAN_POOL) IERC20WithPermit(reserves[i]).safeApprove(address(FLASHLOAN_POOL), type(uint256).max);
       }
     }
   }
@@ -96,7 +102,7 @@ contract MigrationHelper is Ownable, IMigrationHelper {
         uint256[] memory interestRatesToFlash
       ) = _getFlashloanParams(positionsToRepay);
 
-      V3_POOL.flashLoan(
+      FLASHLOAN_POOL.flashLoan(
         address(this),
         assetsToFlash,
         amountsToFlash,
@@ -122,7 +128,7 @@ contract MigrationHelper is Ownable, IMigrationHelper {
     address initiator,
     bytes calldata params
   ) external returns (bool) {
-    require(msg.sender == address(V3_POOL), 'ONLY_V3_POOL_ALLOWED');
+    require(msg.sender == address(FLASHLOAN_POOL), 'ONLY_FLASHLOAN_POOL_ALLOWED');
     require(initiator == address(this), 'ONLY_INITIATED_BY_MIGRATION_HELPER');
 
     (address[] memory assetsToMigrate, RepayInput[] memory positionsToRepay, address user) = abi

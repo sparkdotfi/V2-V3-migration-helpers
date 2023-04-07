@@ -24,7 +24,7 @@ contract MigrationHelperMainnet is MigrationHelper {
     IERC20WithPermit(0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84);
   IWstETH public constant WSTETH = IWstETH(0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0);
 
-  constructor() MigrationHelper(AaveV3Ethereum.POOL, AaveV2Ethereum.POOL) {
+  constructor() MigrationHelper(AaveV3Ethereum.POOL, AaveV2Ethereum.POOL, AaveV3Ethereum.POOL) {
     STETH.safeApprove(address(WSTETH), type(uint256).max);
     WSTETH.safeApprove(address(AaveV3Ethereum.POOL), type(uint256).max);
   }
