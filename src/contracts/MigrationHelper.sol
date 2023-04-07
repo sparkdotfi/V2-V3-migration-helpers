@@ -180,7 +180,7 @@ contract MigrationHelper is Ownable, IMigrationHelper {
     uint256,
     address,
     uint256
-  ) internal {
+  ) internal virtual {
   }
 
   function _migrationNoBorrow(address user, address[] memory assets) internal {
