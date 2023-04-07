@@ -140,8 +140,9 @@ contract MigrationHelper is Ownable, IMigrationHelper {
     for (uint256 i = 0; i < assetsToFlash.length; i++) {
       (assetsToFlash[i], amountsToFlash[i]) = _postFlashLoan(
         assetsToFlash[i],
+        amountsToFlash[i],
         positionsToRepay[i].asset,
-        amountsToFlash[i]
+        positionsToRepay[i].amount
       );
     }
 
@@ -175,11 +176,12 @@ contract MigrationHelper is Ownable, IMigrationHelper {
   }
 
   function _postFlashLoan(
-    address asset,
     address,
-    uint256 amount
+    uint256,
+    address desiredAsset,
+    address desiredAmount
   ) internal view virtual returns (address, uint256) {
-    return (asset, amount);
+    return (desiredAsset, desiredAmount);
   }
 
   function _migrationNoBorrow(address user, address[] memory assets) internal {
