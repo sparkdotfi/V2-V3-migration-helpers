@@ -105,9 +105,6 @@ interface IMigrationHelper {
   /// @notice The destination pool
   function V3_POOL() external returns (IV3Pool);
 
-  /// @notice The flash loan pool
-  function FLASHLOAN_POOL() external returns (IV3Pool);
-
   /**
    * @notice Public method for rescue funds in case of a wrong transfer
    * @param emergencyInput - array of parameters to transfer out funds

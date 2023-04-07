@@ -11,7 +11,7 @@ import {MigrationHelper} from '../src/contracts/MigrationHelper.sol';
 contract Deploy is Script {
   function run() external {
     vm.startBroadcast();
-    new MigrationHelper(AaveV3Avalanche.POOL, AaveV2Avalanche.POOL, AaveV3Avalanche.POOL);
+    new MigrationHelper(AaveV3Avalanche.POOL, AaveV2Avalanche.POOL);
     vm.stopBroadcast();
   }
 }
