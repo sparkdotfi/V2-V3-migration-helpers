@@ -96,6 +96,14 @@ contract MigrationHelper is Ownable, IMigrationHelper {
         uint256[] memory interestRatesToFlash
       ) = _getFlashloanParams(positionsToRepay);
 
+      // Apply any conversions
+      for (uint256 i = 0; i < assetsToFlash.length; i++) {
+        (assetsToFlash[i], amountsToFlash[i]) = _preFlashLoan(
+          assetsToFlash[i],
+          amountsToFlash[i]
+        );
+      }
+
       V3_POOL.flashLoan(
         address(this),
         assetsToFlash,
@@ -116,8 +124,8 @@ contract MigrationHelper is Ownable, IMigrationHelper {
     @inheritdoc IMigrationHelper
    */
   function executeOperation(
-    address[] calldata,
-    uint256[] calldata,
+    address[] memory assetsToFlash,
+    uint256[] memory amountsToFlash,
     uint256[] calldata,
     address initiator,
     bytes calldata params
@@ -127,6 +135,14 @@ contract MigrationHelper is Ownable, IMigrationHelper {
 
     (address[] memory assetsToMigrate, RepayInput[] memory positionsToRepay, address user) = abi
       .decode(params, (address[], RepayInput[], address));
+
+    // Apply any reverse conversions
+    for (uint256 i = 0; i < assetsToFlash.length; i++) {
+      (assetsToFlash[i], amountsToFlash[i]) = _postFlashLoan(
+        assetsToFlash[i],
+        amountsToFlash[i]
+      );
+    }
 
     for (uint256 i = 0; i < positionsToRepay.length; i++) {
       V2_POOL.repay(
@@ -147,6 +163,20 @@ contract MigrationHelper is Ownable, IMigrationHelper {
     address asset,
     uint256 amount
   ) external view virtual returns (address, uint256) {
+    return (asset, amount);
+  }
+
+  function _preFlashLoan(
+    address asset,
+    uint256 amount
+  ) internal view virtual returns (address, uint256) {
+    return (asset, amount);
+  }
+
+  function _postFlashLoan(
+    address asset,
+    uint256 amount
+  ) internal view virtual returns (address, uint256) {
     return (asset, amount);
   }
 
